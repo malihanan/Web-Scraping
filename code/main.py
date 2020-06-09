@@ -1,16 +1,14 @@
 import sys
+import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup
-import json
-from pick import pick
-import pprint
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-
-from generateOptions import *
+from bs4 import BeautifulSoup
+from pick import pick
+import pprint
 
 class Scrape:
 
@@ -26,24 +24,15 @@ class Scrape:
         options.add_argument(' — incognito')
 
         #accessing the url
-        DRIVER_PATH = './chromedriver.exe'
+        DRIVER_PATH = 'chromedriver.exe'
         self.driver = webdriver.Chrome(options=options,
                                        executable_path=DRIVER_PATH)
+        if self.url is None:
+            self.url = Scrape.url
         self.driver.get(self.url)
 
-        print("Got", self.driver.current_url)
-
-        # Wait 20 seconds for page to load
-        try:
-            WebDriverWait(self.driver, self.timeout).until(EC.visibility_of_element_located((By.ID, 'competitors-quote-sectors')))
-            return True
-        except TimeoutException:
-            print('Timed out waiting for options to load')
-            self.end()
-            return False
-
     def select(self):
-        quoteSectors = get_dict_quoteSectors()
+        quoteSectors = self.get_dict_quoteSectors()
 
         title = 'Please choose a quote sector: '
         option, index = pick(list(quoteSectors.keys()), title)
@@ -87,26 +76,31 @@ class Scrape:
 
     def infer(self, fn):
         self.select()
-        if self.initializeDriver():
-            res = self.scrape_table()
-            self.end()
-            if res is not None:
-                with open("Symbols.json", 'w') as f:
-                    json.dump(res, f)
-                found = []
-                not_found = []
-                with open(fn, 'r') as f:
-                    symbols = f.read().split()
-                    for symbol in symbols:
-                        name = next(
-                            (item["Name"] for item in res if item["Symbol"] == symbol),
-                            None)
-                        if name is not None:
-                            found.append({symbol: name})
-                        else:
-                            not_found.append(symbol)
-                ans = {'found': found, 'not_found': not_found}
-                return json.loads(json.dumps(ans))
+        self.initializeDriver()
+        res = self.scrape_table()
+        self.end()
+        if res is not None:
+            with open("Symbols.json", 'w') as f:
+                json.dump(res, f)
+            found = []
+            not_found = []
+            with open(fn, 'r') as f:
+                symbols = f.read().split()
+                for symbol in symbols:
+                    name = next(
+                        (item["Name"] for item in res if item["Symbol"] == symbol),
+                        None)
+                    if name is not None:
+                        found.append({symbol: name})
+                    else:
+                        not_found.append(symbol)
+            ans = {'found': found, 'not_found': not_found}
+            return json.loads(json.dumps(ans))
+
+    def get_dict_quoteSectors(self):
+        with open('resources/quote_sectors.json', 'r') as f:
+            res = json.load(f)
+        return res
 
     def end(self):
         self.driver.quit()
