@@ -80,7 +80,7 @@ class Scrape:
         res = self.scrape_table()
         self.end()
         if res is not None:
-            with open("Symbols.json", 'w') as f:
+            with open("resources/Symbols.json", 'w') as f:
                 json.dump(res, f)
             found = []
             not_found = []

@@ -1,7 +1,7 @@
 import unittest 
 import os.path
 from main import Scrape
-from generateOptions import *
+from generate_options import *
 
 class MyTest(unittest.TestCase):
 
@@ -9,7 +9,7 @@ class MyTest(unittest.TestCase):
         self.s = Scrape()
 
     def test_generate_options(self):
-        # self.assertEqual(generate_options(), None)
+        generate()
         self.assertTrue(os.path.exists('resources/quote_sectors.json'))
 
     def test_get_dict_quoteSectors(self):
