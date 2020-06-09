@@ -3,7 +3,10 @@
 
  You can select a quote sector, the results on first page will be scraped and a list of Symbols and their Names will be put into `Symbols.json` file.
 
-### Powershell Scripts to run:
+#### Download chromedriver.exe from https://sites.google.com/a/chromium.org/chromedriver/downloads and put in in the root folder of the project.
+Refer https://chromedriver.chromium.org/downloads/version-selection to select correct version of chromedriver according to the version of your Chrome.
+
+## Powershell Scripts to run:
 
 #### `setup.ps1` creates virtual environment, installs requirements, generates options and runs `scrape.ps1`.
 for first time run `scripts/setup.ps1` from root folder of project
@@ -21,8 +24,6 @@ run `scripts/scrape.ps1` from root folder of project to start scraping
 * resources has text and json files generated
     * data.txt to give input symbols
     * requirements.txt has all required packages with versions for the script to run
-
-Download chromedriver.exe from https://sites.google.com/a/chromium.org/chromedriver/downloads and put in in the root folder of the project
 
 #### Further extensions:
 Can scrape for all quote sectors and all their pages (resource intensive)
